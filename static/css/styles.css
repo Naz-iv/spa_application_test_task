@@ -10788,6 +10788,14 @@ header.masthead .post-heading .meta a {
   margin-top: 0;
   color: #6c757d;
 }
+
+.post-preview > a > .reply-title {
+  font-size: 1.875rem;
+  margin-top: 1.875rem;
+  padding-left: 20px;
+  margin-bottom: 0.625rem;
+}
+
 .post-preview > .post-meta > a {
   text-decoration: none;
 }

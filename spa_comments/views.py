@@ -1,9 +1,10 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import generic
 
-from spa_comments.forms import LoginForm, SignupForm
-from spa_comments.models import Comment
+from spa_comments.forms import CommentCreateForm
+from spa_comments.models import Comment, Author
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -16,27 +17,49 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, "index.html", context=context)
 
 
-def login(request: HttpRequest) -> HttpResponse:
-    context = {
-        "form": LoginForm()
-    }
-    return render(request, "login.html", context=context)
-
-
-def signup(request: HttpRequest) -> HttpResponse:
-    context = {
-        "form": SignupForm()
-    }
-    return render(request, "signup.html", context=context)
-
-
-def logout(request: HttpRequest) -> HttpResponse:
-    pass
-
-
 class CommentCreateView(generic.CreateView):
-    pass
+    model = Comment
+    template_name = "comments_create.html"
+    form_class = CommentCreateForm
+    success_url = reverse_lazy("spa-comments:home")
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            user_data = {
+                "username": request.user.username,
+                "email": request.user.email,
+            }
+            form = self.form_class(initial=user_data)
+        else:
+            form = self.form_class
+        return render(request, "comments_create.html", {"form": form})
+
+    def form_valid(self, form):
+        try:
+            author = Author.objects.get(email=form.cleaned_data["email"])
+        except Author.DoesNotExist:
+            author = Author.objects.create(
+                email=form.cleaned_data["email"],
+                username=form.cleaned_data["username"],
+                user=self.request.user
+            )
+
+        form.instance.author = author
+
+        return super().form_valid(form)
 
 
 class CommentListView(generic.ListView):
-    pass
+    model = Comment
+    template_name = "index.html"
+    queryset = Comment.objects.all()
+    context_object_name = "comments"
+
+    def get_queryset(self):
+        if (self.request.user and self.request.user.is_authenticated
+                and "my" in self.request.path):
+            return self.queryset.filter(author__user=self.request.user)
+
+        return self.queryset
+
+

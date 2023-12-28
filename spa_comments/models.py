@@ -1,7 +1,6 @@
 import re
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
@@ -9,16 +8,22 @@ from django.db import models
 from collections import deque
 
 
-class User(AbstractUser):
+class Author(models.Model):
+    username = models.CharField(max_length=255)
     email = models.EmailField()
-    profile_image = models.ImageField(null=True, blank=True)
+    user = models.OneToOneField(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        null=True,
+        default=None
+    )
 
     def __str__(self):
         return self.username
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="comments")
     published_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField(validators=[MinLengthValidator(1)])
 
@@ -64,7 +69,7 @@ class Comment(models.Model):
 
     def __str__(self):
         formatted_time = self.published_at.strftime("%H:%M:%S %d-%m-%Y")
-        return f"Comment by {self.user} at {formatted_time}"
+        return f"Comment by {self.author} at {formatted_time}"
 
 
 class Reply(models.Model):
