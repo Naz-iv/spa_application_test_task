@@ -26,6 +26,7 @@ class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="comments")
     published_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField(validators=[MinLengthValidator(1)])
+    reply = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-published_at']
