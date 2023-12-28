@@ -35,25 +35,17 @@
         <!-- Post preview-->
         <div class="post-preview">
           {% for comment in comments %}
-            <p class="post-meta">
+            <p class="post-meta" style="background-color: #f8f9fa">
               <strong>{{ comment.author.username|capfirst }}</strong> on {{ comment.published_at }}
+              <a href="{% url 'spa-comments:reply-create' pk=comment.id %}">
+                Reply<i class="fa-solid fa-reply"></i>
+              </a>
             </p>
-            <h2 class="post-title">{{ comment.text|capfirst }}</h2>
+            <p class="post-title ">{{ comment.text|capfirst }}</p>
             <!-- Divider-->
             <hr class="my-4"/>
-            <div style="margin-left: 6%;">
-              {% for reply in comment.replies.all %}
-                <p class="post-meta">
-                  <strong>{{ reply.reply.author.username|capfirst }}</strong> on {{ reply.reply.published_at }}
-                </p>
-                <h3 class="reply-title">{{ reply.reply.text|capfirst }}</h3>
-                <!-- Divider-->
-                <hr class="my-4"/>
-              {% endfor %}
-            </div>
-
+            {% include 'includes/comment_list.html' with replies=comment.replies.all %}
           {% endfor %}
-
         </div>
 
         <!-- Pager-->

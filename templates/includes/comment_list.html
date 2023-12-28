@@ -1,0 +1,18 @@
+<div class="post-preview" style="margin-left: 6%; font-size: 95%;">
+  {% for reply in replies %}
+    <p class="post-meta" style="background-color: #f8f9fa">
+      <strong>{{ reply.reply.author.username|capfirst }}</strong> on {{ reply.reply.published_at }}
+      <a href="{% url 'spa-comments:reply-create' pk=reply.reply.id %}">
+        Reply<i class="fa-solid fa-reply"></i>
+      </a>
+
+    </p>
+    <p class="post-title">{{ reply.reply.text|capfirst }}</p>
+    <!-- Divider-->
+    <hr class="my-4"/>
+    {% if reply.reply.replies.all %}
+      {% include "includes/comment_list.html" with replies=reply.reply.replies.all %}
+    {% endif %}
+  {% endfor %}
+
+</div>
