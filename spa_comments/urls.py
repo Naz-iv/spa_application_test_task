@@ -1,16 +1,16 @@
 from django.urls import path
 
 from spa_comments.views import (
-    index,
     CommentCreateView,
-    CommentListView
+    CommentListView, ReplyCreateView
 )
 
 urlpatterns = [
-    path("", index, name="home"),
+    path("", CommentListView.as_view(), name="home"),
     path("comments/create/", CommentCreateView.as_view(), name="comment-create"),
-    path("comments/", CommentListView.as_view(), name="comment-list"),
     path("comments/my/", CommentListView.as_view(), name="comment-my"),
+    path("comments/<int:pk>/reply/", ReplyCreateView.as_view(), name="reply-create"),
+
 ]
 
 app_name = "spa-comments"
