@@ -11,10 +11,10 @@
         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'spa-comments:home' %}">Home</a></li>
         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'spa-comments:comment-create' %}">Add Comment</a></li>
         {% if user.is_authenticated %}
-          <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'spa-comments:comment-list' %}">My Comments</a></li>
-          <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'spa-comments:logout' %}">Logout</a></li>
+          <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'spa-comments:comment-my' %}">My Comments</a></li>
+          <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'accounts:logout' %}">Logout</a></li>
         {% else %}
-          <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'spa-comments:login' %}">Login</a></li>
+          <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'accounts:login' %}">Login</a></li>
         {% endif %}
 
       </ul>

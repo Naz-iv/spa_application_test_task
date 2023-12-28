@@ -9,7 +9,7 @@
           <div class="page-heading">
             <h1>Sign Up</h1>
             <span class="subheading">Create account to get access to extended functionality<br>
-              or <a href="{% url 'spa-comments:login' %}" class="text-bg-primary"><strong>Login</strong></a>, if you already have account.
+              or <a href="{% url 'accounts:login' %}" class="text-bg-primary"><strong>Login</strong></a>, if you already have account.
             </span>
           </div>
         </div>
@@ -25,9 +25,26 @@
       <div class="row gx-4 gx-lg-5 justify-content-center">
         <div class="col-md-10 col-lg-8 col-xl-7">
           <div class="my-5">
-            <form method="post" id="form">
+            <form method="post" action="{% url 'accounts:signup' %}" novalidate>
               {% csrf_token %}
-              {{ form.non_field_errors }}
+
+              {% if message %}
+                <div class="text-left text-danger mb-2">{{ message }}</div>
+              {% endif %}
+
+              {% if form_error %}
+                <div class="text-left text-danger mb-2">
+                  {% for key, value in form_error.items %}
+                    {% if key == "password1" %}
+                      Password {{ value }}
+                    {% elif key == "password2" %}
+                      Repeat password {{ value }}
+                    {% else %}
+                      {{ key|capfirst }} {{ value }}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
 
               {% for field in form %}
                 <div class="form-floating">
@@ -40,23 +57,8 @@
 
               <br/>
 
-              <!-- Submit success message -->
-              <div class="d-none" id="submitSuccessMessage">
-                <div class="text-center mb-3">
-                  <div class="fw-bolder">Form submission successful!</div>
-                  To activate this form, sign up at
-                  <br/>
-                  <a href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
-                </div>
-              </div>
-
-              <!-- Submit error message -->
-              <div class="d-none" id="submitErrorMessage">
-                <div class="text-center text-danger mb-3">Error sending message!</div>
-              </div>
-
               <!-- Submit Button-->
-              <button class="btn btn-primary text-uppercase disabled" id="submitButton" type="submit">Send</button>
+              <button class="btn btn-primary text-uppercase" id="submitButton" type="submit">Register</button>
             </form>
           </div>
         </div>
