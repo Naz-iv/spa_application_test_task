@@ -37,7 +37,9 @@ class CommentCreateForm(forms.ModelForm):
     )
     parent_comment_id = forms.IntegerField(
         label="Parent ID",
-        widget=forms.HiddenInput()
+        widget=forms.HiddenInput(),
+        required=False,
+        initial=None
     )
 
     class Meta:
