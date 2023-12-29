@@ -8,5 +8,5 @@ urlpatterns = [
     path("", include("spa_comments.urls", namespace="spa-comments")),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path('captcha/', include('captcha.urls')),
-
+    path("__debug__/", include("debug_toolbar.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
