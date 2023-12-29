@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import generic
 
 from spa_comments.forms import CommentCreateForm
@@ -39,7 +40,10 @@ class CommentCreateView(generic.CreateView):
         )
 
     def form_valid(self, form):
-        parent_comment = get_object_or_404(Comment, id=form.cleaned_data.pop("parent_comment_id"))
+        parent_comment_id = form.cleaned_data.pop("parent_comment_id")
+        print(parent_comment_id)
+        if parent_comment_id:
+            form.instance.parent_comment = Comment.objects.get(id=parent_comment_id)
         form.cleaned_data.pop("captcha")
         try:
             author = Author.objects.get(email=form.cleaned_data.pop("email"))
@@ -52,7 +56,6 @@ class CommentCreateView(generic.CreateView):
             )
 
         form.instance.author = author
-        form.instance.parent_comment = parent_comment
 
         return super().form_valid(form)
 
@@ -60,7 +63,9 @@ class CommentCreateView(generic.CreateView):
 class CommentListView(generic.ListView):
     model = Comment
     template_name = "index.html"
-    queryset = Comment.objects.filter(parent_comment=None)
+    queryset = Comment.objects.prefetch_related("replies").select_related(
+        "author", "author__user"
+    )
     context_object_name = "comments"
     ordering = "-published_at"
     paginate_by = 25
@@ -76,9 +81,9 @@ class CommentListView(generic.ListView):
 
         if (self.request.user and self.request.user.is_authenticated
                 and "my" in self.request.path):
-            queryset = queryset.filter(author__user=self.request.user)
+            return queryset.filter(author__user=self.request.user).order_by(ordering)
 
-        return queryset.order_by(ordering)
+        return queryset.filter(parent_comment=None).order_by(ordering)
 
     def get_ordering(self):
         ordering = self.request.GET.get("order_by", self.ordering)
@@ -94,6 +99,9 @@ class CommentListView(generic.ListView):
         return ordering
 
     def get_context_data(self, **kwargs):
+        queryset = self.queryset.all()
         context = super().get_context_data(**kwargs)
         context["user_choice"] = self.get_ordering()
+        context["comments_cache"] = list(queryset)
+
         return context
