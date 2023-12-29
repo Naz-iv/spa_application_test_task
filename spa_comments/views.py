@@ -1,5 +1,3 @@
-from django import forms
-from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
@@ -43,33 +41,43 @@ class CommentCreateView(generic.CreateView):
 class CommentListView(generic.ListView):
     model = Comment
     template_name = "index.html"
-    queryset = Comment.objects.filter(reply=False)
+    queryset = Comment.objects.filter(is_reply=False)
     context_object_name = "comments"
+    ordering = "-published_at"
+    paginate_by = 25
 
     def get_queryset(self):
         queryset = self.queryset
+        ordering = self.get_ordering()
 
         if (self.request.user and self.request.user.is_authenticated
                 and "my" in self.request.path):
             queryset.filter(author__user=self.request.user)
 
-        # TODO пофіксити сортування за username
-        if "username" in self.ordering:
-            return queryset.order_by(self.ordering)
-        return queryset.order_by(self.ordering)
+        if "username" in ordering:
+            ordering = ordering.replace("username", "author__username")
+        elif "email" in ordering:
+            ordering = ordering.replace("email", "author__email")
 
-    def get(self, request, *args, **kwargs):
-        self.ordering = request.GET.get("order_by", "-published_at")
+        return queryset.order_by(ordering)
+
+    def get_ordering(self):
+        ordering = self.request.GET.get("order_by", self.ordering)
 
         allowed_attributes = [
             "username", "-username", "email", "-email",
             "published_at", "-published_at"
         ]
 
-        if self.ordering not in allowed_attributes:
-            self.ordering("-published_at")
+        if ordering not in allowed_attributes:
+            ordering = self.ordering
 
-        return super().get(self, request, *args, **kwargs)
+        return ordering
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user_choice"] = self.get_ordering()
+        return context
 
 
 class ReplyCreateView(generic.CreateView):
