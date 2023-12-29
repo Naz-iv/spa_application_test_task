@@ -5,8 +5,8 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
 
-from spa_comments.forms import CommentCreateForm, ReplyCreateForm
-from spa_comments.models import Comment, Author, Reply
+from spa_comments.forms import CommentCreateForm
+from spa_comments.models import Comment, Author
 
 
 def get_user_data(request: HttpRequest) -> dict:
@@ -26,23 +26,33 @@ class CommentCreateView(generic.CreateView):
     success_url = reverse_lazy("spa-comments:home")
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class(initial=get_user_data(request))
+        prefill_data = get_user_data(request)
 
-        return render(request, "comments_create.html", {"form": form})
+        parent_comment_id = kwargs.get("pk", None)
+        if parent_comment_id:
+            prefill_data["parent_comment_id"] = parent_comment_id
+
+        return render(
+            request,
+            "comments_create.html",
+            {"form": self.form_class(initial=prefill_data)}
+        )
 
     def form_valid(self, form):
+        parent_comment = get_object_or_404(Comment, id=form.cleaned_data.pop("parent_comment_id"))
+        form.cleaned_data.pop("captcha")
         try:
-            print(form.cleaned_data["email"])
-            author = Author.objects.get(user__email=form.cleaned_data["email"])
-            print(author)
-        except (Author.DoesNotExist, ValueError):
+            author = Author.objects.get(email=form.cleaned_data.pop("email"))
+            form.cleaned_data.pop("username")
+        except Author.DoesNotExist:
             author = Author.objects.create(
-                email=form.cleaned_data["email"],
-                username=form.cleaned_data["username"],
+                email=form.cleaned_data.pop("email"),
+                username=form.cleaned_data.pop("username"),
                 user=self.request.user
             )
 
         form.instance.author = author
+        form.instance.parent_comment = parent_comment
 
         return super().form_valid(form)
 
@@ -50,7 +60,7 @@ class CommentCreateView(generic.CreateView):
 class CommentListView(generic.ListView):
     model = Comment
     template_name = "index.html"
-    queryset = Comment.objects.filter(is_reply=False)
+    queryset = Comment.objects.filter(parent_comment=None)
     context_object_name = "comments"
     ordering = "-published_at"
     paginate_by = 25
@@ -87,47 +97,3 @@ class CommentListView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context["user_choice"] = self.get_ordering()
         return context
-
-
-class ReplyCreateView(generic.CreateView):
-    model = Reply
-    template_name = "reply_create.html"
-    form_class = ReplyCreateForm
-    success_url = reverse_lazy("spa-comments:home")
-
-    def get(self, request, *args, **kwargs):
-        prefill_data = get_user_data(request)
-
-        original_comment_id = kwargs.get("pk", None)
-        if original_comment_id:
-            prefill_data["original_comment_id"] = original_comment_id
-
-        return render(
-            request,
-            "reply_create.html",
-            {"form": self.form_class(initial=prefill_data)}
-        )
-
-    def form_valid(self, form):
-
-        original_comment = get_object_or_404(Comment, id=form.cleaned_data.pop("original_comment_id"))
-        form.cleaned_data.pop("captcha")
-        try:
-            author = Author.objects.get(email=form.cleaned_data.pop("email"))
-            form.cleaned_data.pop("username")
-        except Author.DoesNotExist:
-            author = Author.objects.create(
-                email=form.cleaned_data.pop("email"),
-                username=form.cleaned_data.pop("username"),
-                user=self.request.user
-            )
-        for name, item in form.cleaned_data.items():
-            print(name, item)
-
-        reply = Comment.objects.create(
-            author=author, is_reply=True, **form.cleaned_data
-        )
-        form.instance.original_comment = original_comment
-        form.instance.reply = reply
-
-        return super().form_valid(form)

@@ -45,7 +45,7 @@ class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="comments")
     published_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField(validators=[MinLengthValidator(1)])
-    is_reply = models.BooleanField(default=False)
+    parent_comment = models.ForeignKey("Comment", on_delete=models.SET_NULL, null=True, related_name="replies")
     image = models.ImageField(
         null=True, blank=True,
         validators=[FileExtensionValidator(allowed_extensions=["jpg", "gif", "png"])],
@@ -106,8 +106,3 @@ class Comment(models.Model):
     def __str__(self):
         formatted_time = self.published_at.strftime("%H:%M:%S %d-%m-%Y")
         return f"Comment by {self.author} at {formatted_time}"
-
-
-class Reply(models.Model):
-    original_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="replies")
-    reply = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="original_comment")
