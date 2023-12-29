@@ -1,29 +1,32 @@
 <div class="post-preview" style="margin-left: 6%; font-size: 95%;">
   {% for reply in replies %}
-    <p class="post-meta" style="background-color: #f8f9fa">
-      <strong>{{ reply.author.username|capfirst }}</strong> at {{ reply.published_at }}
-      <a href="{% url 'spa-comments:comment-reply' pk=reply.id %}" style="float: right">
-        Reply<i class="fa-solid fa-reply"></i>
-      </a>
-    </p>
-    <p class="post-title">{{ reply.text|capfirst }}</p>
-    {% if reply.image or reply.file %}
-      <p class="post-meta">Attachments:
-        {% if reply.image %}
-          <a href="{{ reply.image.url }}" target="_blank">
-            <i class="fa-solid fa-file-image"></i>
-          </a>
-        {% endif %}
-        {% if reply.file %}
-          <a href="{{ reply.file.url }}" target="_blank">
-            <i class="fa-solid fa-file-lines"></i>
-          </a>
-        {% endif %}
+    <div style="background-color: #fafff3">
+      <p class="post-meta" style="background-color: #f8f9fa">
+        <strong>{{ reply.author.username|capfirst }}</strong> at {{ reply.published_at }}
+        <a href="{% url 'spa-comments:comment-reply' pk=reply.id %}" style="float: right; text-decoration: none">
+          Reply<i class="fa-solid fa-reply"></i>
+        </a>
       </p>
-    {% endif %}
-    <!-- Divider-->
-    <hr class="my-4"/>
-    {% if reply.replies.all %}
+      <p class="post-title" style="padding-left: 5px">{{ reply.text|capfirst }}</p>
+      {% if reply.image or reply.file %}
+        <p class="post-meta" style="padding-left: 5px">Attachments:
+          {% if reply.image %}
+            <a href="{{ reply.image.url }}" target="_blank">
+              <i class="fa-solid fa-file-image"></i>
+            </a>
+          {% endif %}
+          {% if reply.file %}
+            <a href="{{ reply.file.url }}" target="_blank">
+              <i class="fa-solid fa-file-lines"></i>
+            </a>
+          {% endif %}
+        </p>
+      {% endif %}
+      <!-- Divider-->
+      <hr class="my-4"/>
+    </div>
+    {% get_reply_list reply comments_cache as replies %}
+    {% if replies %}
       <div class="container">
         <p class="post-meta" style="background-color: #f8f9fa; font-size: 90%">
           Replies:
@@ -31,7 +34,7 @@
               class='fa-solid fa-minus'></i></button>
         </p>
         <div class="reply-container" style="display: block">
-          {% include "includes/comment_list.html" with replies=reply.replies.all %}
+          {% include "includes/comment_list.html" with replies=replies %}
         </div>
       </div>
     {% endif %}

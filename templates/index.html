@@ -38,30 +38,34 @@
         <!-- Post preview-->
         <div class="post-preview">
           {% for comment in comments %}
-            <p class="post-meta" style="background-color: #f8f9fa">
-              <strong>{{ comment.author.username|capfirst }}</strong> at {{ comment.published_at }}
-              <a href="{% url 'spa-comments:comment-reply' pk=comment.id %}" style="float: right">
-                Reply<i class="fa-solid fa-reply"></i>
-              </a>
-            </p>
-            <p class="post-title ">{{ comment.text|capfirst }}</p>
-            {% if comment.image or comment.file %}
-              <p class="post-meta">Attachments:
-                {% if comment.image %}
-                  <a href="{{ comment.image.url }}" target="_blank">
-                    <i class="fa-solid fa-file-image"></i>
-                  </a>
-                {% endif %}
-                {% if comment.file %}
-                  <a href="{{ comment.file.url }}" target="_blank">
-                    <i class="fa-solid fa-file-lines"></i>
-                  </a>
-                {% endif %}
+            <div style="background-color: #fff6f2">
+              <p class="post-meta" style="background-color: #f8f9fa;">
+                <strong>{{ comment.author.username|capfirst }}</strong> at {{ comment.published_at }}
+                <a href="{% url 'spa-comments:comment-reply' pk=comment.id %}"
+                   style="float: right; text-decoration: none">
+                  Reply<i class="fa-solid fa-reply"></i>
+                </a>
               </p>
-            {% endif %}
-            <!-- Divider-->
-            <hr class="my-4"/>
-            {% if comment.replies.all %}
+              <p class="post-title " style="padding-left: 5px">{{ comment.text|capfirst }}</p>
+              {% if comment.image or comment.file %}
+                <p class="post-meta" style="padding-left: 5px">Attachments:
+                  {% if comment.image %}
+                    <a href="{{ comment.image.url }}" target="_blank">
+                      <i class="fa-solid fa-file-image"></i>
+                    </a>
+                  {% endif %}
+                  {% if comment.file %}
+                    <a href="{{ comment.file.url }}" target="_blank">
+                      <i class="fa-solid fa-file-lines"></i>
+                    </a>
+                  {% endif %}
+                </p>
+              {% endif %}
+              <!-- Divider-->
+              <hr class="my-4"/>
+            </div>
+            {% get_reply_list comment comments_cache as replies %}
+            {% if replies %}
               <div class="container">
                 <p class="post-meta" style="background-color: #f8f9fa; font-size: 90%">
                   Replies:
@@ -69,7 +73,7 @@
                       class='fa-solid fa-minus'></i></button>
                 </p>
                 <div class="reply-container" style="display: block">
-                  {% include "includes/comment_list.html" with replies=comment.replies.all %}
+                  {% include "includes/comment_list.html" with replies=replies %}
                 </div>
               </div>
             {% endif %}
