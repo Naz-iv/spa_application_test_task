@@ -163,3 +163,5 @@ media/uploads/files/*
 
 !media/uploads/images/.gitkeep
 !media/uploads/files/.gitkeep
+!media/uploads/.gitkeep
+!media/.gitkeep
