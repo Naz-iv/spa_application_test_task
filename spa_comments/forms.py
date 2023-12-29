@@ -1,5 +1,6 @@
 from captcha.fields import CaptchaField
 from django import forms
+from django.core.validators import FileExtensionValidator
 
 from spa_comments.models import Comment, Reply
 
@@ -25,10 +26,22 @@ class CommentCreateForm(forms.ModelForm):
         label="Captcha",
         help_text="Enter the captcha"
     )
+    image = forms.ImageField(
+        label="Image",
+        widget=forms.FileInput(attrs={"class": "form-control", "placeholder": "Upload image..."}),
+        validators=[FileExtensionValidator(allowed_extensions=["jpeg", "gif", "png"])],
+        required=False,
+    )
+    file = forms.FileField(
+        label="File",
+        widget=forms.FileInput(attrs={"class": "form-control", "placeholder": "Upload file..."}),
+        validators=[FileExtensionValidator(allowed_extensions=["txt"])],
+        required=False,
+    )
 
     class Meta:
         model = Comment
-        fields = ["username", "email", "text", "captcha"]
+        fields = ["username", "email", "text", "captcha", "image", "file"]
 
 
 class ReplyCreateForm(forms.ModelForm):

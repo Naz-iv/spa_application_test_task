@@ -1,11 +1,15 @@
+import os
 import re
+import uuid
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, FileExtensionValidator
 from django.db import models
 
 from collections import deque
+
+from django.utils.text import slugify
 
 
 class Author(models.Model):
@@ -22,11 +26,37 @@ class Author(models.Model):
         return self.username
 
 
+def create_path_for_image(instance, filename: str):
+    _, extension = os.path.splitext(filename)
+    return os.path.join(
+        "uploads/images/",
+        f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+    )
+
+
+def create_path_for_file(instance, filename: str):
+    _, extension = os.path.splitext(filename)
+    return os.path.join(
+        "uploads/files/",
+        f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+    )
+
+
 class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="comments")
     published_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField(validators=[MinLengthValidator(1)])
-    reply = models.BooleanField(default=False)
+    is_reply = models.BooleanField(default=False)
+    image = models.ImageField(
+        null=True, blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=["jpeg", "gif", "png"])],
+        upload_to=create_path_for_image
+    )
+    file = models.FileField(
+        null=True, blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=["txt"])],
+        upload_to=create_path_for_file
+    )
 
     class Meta:
         ordering = ['-published_at']

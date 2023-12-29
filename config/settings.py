@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "spa_comments",
     "accounts",
-    "captcha"
+    "captcha",
+    "spa_comments.templatetags"
 ]
 
 MIDDLEWARE = [
