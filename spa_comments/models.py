@@ -40,12 +40,19 @@ def create_path_for_file(instance, filename: str):
         f"file-{uuid.uuid4()}{extension}"
     )
 
+def validate_file_size(file):
+    max_size = 100 * 1024
+    if file.size > max_size:
+        raise ValidationError("File size must be less than 100 KB.")
+
 
 class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="comments")
     published_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField(validators=[MinLengthValidator(1)])
-    parent_comment = models.ForeignKey("Comment", on_delete=models.SET_NULL, null=True, related_name="replies")
+    parent_comment = models.ForeignKey(
+        "Comment", on_delete=models.SET_NULL, null=True, blank=True, related_name="replies"
+    )
     image = models.ImageField(
         null=True, blank=True,
         validators=[FileExtensionValidator(allowed_extensions=["jpg", "gif", "png"])],
@@ -53,7 +60,7 @@ class Comment(models.Model):
     )
     file = models.FileField(
         null=True, blank=True,
-        validators=[FileExtensionValidator(allowed_extensions=["txt"])],
+        validators=[FileExtensionValidator(allowed_extensions=["txt"]), validate_file_size],
         upload_to=create_path_for_file
     )
 
