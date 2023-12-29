@@ -29,13 +29,11 @@ class CommentCreateForm(forms.ModelForm):
     image = forms.ImageField(
         label="Image",
         widget=forms.FileInput(attrs={"class": "form-control", "placeholder": "Upload image..."}),
-        validators=[FileExtensionValidator(allowed_extensions=["jpeg", "gif", "png"])],
         required=False,
     )
     file = forms.FileField(
         label="File",
-        widget=forms.FileInput(attrs={"class": "form-control", "placeholder": "Upload file..."}),
-        validators=[FileExtensionValidator(allowed_extensions=["txt"])],
+        widget=forms.FileInput(attrs={"class": "form-control", "placeholder": "Upload file...", "accept": ".txt"}),
         required=False,
     )
 
@@ -70,6 +68,18 @@ class ReplyCreateForm(forms.ModelForm):
         help_text="Enter the captcha"
     )
 
+    image = forms.ImageField(
+        label="Image",
+        widget=forms.FileInput(attrs={"class": "form-control", "placeholder": "Upload image..."}),
+        required=False,
+    )
+
+    file = forms.FileField(
+        label="File",
+        widget=forms.FileInput(attrs={"class": "form-control", "placeholder": "Upload file...", "accept": ".txt"}),
+        required=False,
+    )
+
     class Meta:
         model = Reply
-        fields = ["username", "email", "text", "captcha", "original_comment_id"]
+        fields = ["username", "email", "text", "captcha", "image", "file", "original_comment_id"]
