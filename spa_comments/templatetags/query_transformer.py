@@ -6,6 +6,7 @@ register = template.Library()
 
 @register.simple_tag()
 def query_transform(request: HttpRequest, **kwargs) -> HttpRequest:
+    """Tag for transforming query submitted with GET method to concatenate all parameters"""
     updated = request.GET.copy()
     for key, value in kwargs.items():
         if value is not None:
