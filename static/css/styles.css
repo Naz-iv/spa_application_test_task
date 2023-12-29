@@ -10804,3 +10804,8 @@ header.masthead .post-heading .meta a {
     font-size: 2.25rem;
   }
 }
+
+.btn-ordering {
+  margin: 0;
+  color: #212529;
+}

@@ -1,8 +1,8 @@
 <div class="post-preview" style="margin-left: 6%; font-size: 95%;">
   {% for reply in replies %}
     <p class="post-meta" style="background-color: #f8f9fa">
-      <strong>{{ reply.reply.author.username|capfirst }}</strong> on {{ reply.reply.published_at }}
-      <a href="{% url 'spa-comments:reply-create' pk=reply.reply.id %}">
+      <strong>{{ reply.reply.author.username|capfirst }}</strong> at {{ reply.reply.published_at }}
+      <a href="{% url 'spa-comments:reply-create' pk=reply.reply.id %}" style="float: right">
         Reply<i class="fa-solid fa-reply"></i>
       </a>
 
