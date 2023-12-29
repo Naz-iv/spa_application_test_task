@@ -46,7 +46,7 @@
                 {% else %}
                   <div class="form-floating">
                     {{ field }}
-                    {% if field.label != "Text" %}
+                    {% if field.label != "Text" and field.label != "Parent ID"%}
                       <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {% endif %}
                   </div>

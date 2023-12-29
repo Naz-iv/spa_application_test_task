@@ -40,7 +40,7 @@
           {% for comment in comments %}
             <p class="post-meta" style="background-color: #f8f9fa">
               <strong>{{ comment.author.username|capfirst }}</strong> at {{ comment.published_at }}
-              <a href="{% url 'spa-comments:reply-create' pk=comment.id %}" style="float: right">
+              <a href="{% url 'spa-comments:comment-reply' pk=comment.id %}" style="float: right">
                 Reply<i class="fa-solid fa-reply"></i>
               </a>
             </p>
