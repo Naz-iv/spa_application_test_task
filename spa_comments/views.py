@@ -41,17 +41,17 @@ class CommentCreateView(generic.CreateView):
 
     def form_valid(self, form):
         parent_comment_id = form.cleaned_data.pop("parent_comment_id")
+        email = form.cleaned_data.pop("email")
         if parent_comment_id:
             form.instance.parent_comment = Comment.objects.get(id=parent_comment_id)
         form.cleaned_data.pop("captcha")
         try:
-            author = Author.objects.get(email=form.cleaned_data.pop("email"))
+            author = Author.objects.get(email=email)
             form.cleaned_data.pop("username")
         except Author.DoesNotExist:
             author = Author.objects.create(
-                email=form.cleaned_data.pop("email"),
-                username=form.cleaned_data.pop("username"),
-                user=self.request.user
+                email=email,
+                username=form.cleaned_data.pop("username")
             )
 
         form.instance.author = author
