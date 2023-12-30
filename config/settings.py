@@ -75,6 +75,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 AUTH_USER_MODEL = "accounts.User"
 
+CAPTCHA_CHALLENGE_FUNCT = "spa_comments.utils.generate_random_alphanumeric_challenge"
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
