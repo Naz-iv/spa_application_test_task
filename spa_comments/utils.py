@@ -2,7 +2,6 @@ import random
 import string
 
 from django.core.cache import cache
-from django.utils import timezone
 
 from spa_comments.models import Comment
 
