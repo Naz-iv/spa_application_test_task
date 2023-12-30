@@ -7,6 +7,7 @@ from spa_comments.models import Comment
 
 
 def generate_random_alphanumeric_challenge(length=6):
+    """Generateds custom captcha code with given number of characters"""
     challenge = u""
     response = u""
     characters = string.ascii_uppercase + string.digits
@@ -25,7 +26,7 @@ def get_expensive_data():
     data = cache.get("comments_cache")
 
     if data is None:
-        data = Comment.objects.filter(parent_comment__isnull=False)
+        data = Comment.objects.filter(parent_comment__isnull=False).select_related("author")
 
         cache.set("comments_cache", data, timeout=3600)
 
