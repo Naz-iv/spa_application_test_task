@@ -2,14 +2,13 @@ import os
 import re
 import uuid
 
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, FileExtensionValidator
 from django.db import models
 
 from collections import deque
-
-from django.utils.text import slugify
 
 
 class Author(models.Model):
@@ -30,7 +29,7 @@ def create_path_for_image(instance, filename: str):
     _, extension = os.path.splitext(filename)
     return os.path.join(
         "uploads/images/",
-        f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+        f"image-{uuid.uuid4()}{extension}"
     )
 
 
@@ -38,7 +37,7 @@ def create_path_for_file(instance, filename: str):
     _, extension = os.path.splitext(filename)
     return os.path.join(
         "uploads/files/",
-        f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+        f"file-{uuid.uuid4()}{extension}"
     )
 
 
@@ -46,10 +45,10 @@ class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="comments")
     published_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField(validators=[MinLengthValidator(1)])
-    is_reply = models.BooleanField(default=False)
+    parent_comment = models.ForeignKey("Comment", on_delete=models.SET_NULL, null=True, related_name="replies")
     image = models.ImageField(
         null=True, blank=True,
-        validators=[FileExtensionValidator(allowed_extensions=["jpeg", "gif", "png"])],
+        validators=[FileExtensionValidator(allowed_extensions=["jpg", "gif", "png"])],
         upload_to=create_path_for_image
     )
     file = models.FileField(
@@ -98,11 +97,12 @@ class Comment(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
+        if self.image:
+            img = Image.open(self.image.path)
+            max_size = (320, 240)
+            img.thumbnail(max_size)
+            img.save(self.image.path)
+
     def __str__(self):
         formatted_time = self.published_at.strftime("%H:%M:%S %d-%m-%Y")
         return f"Comment by {self.author} at {formatted_time}"
-
-
-class Reply(models.Model):
-    original_comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="replies")
-    reply = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="original_comment")
