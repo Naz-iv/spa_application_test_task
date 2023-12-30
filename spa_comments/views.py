@@ -7,6 +7,7 @@ from django.views import generic
 
 from spa_comments.forms import CommentCreateForm
 from spa_comments.models import Comment, Author
+from spa_comments.utils import get_expensive_data
 
 
 def get_user_data(request: HttpRequest) -> dict:
@@ -96,4 +97,6 @@ class CommentListView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["user_choice"] = self.get_ordering()
+        context["comments_cache"] = get_expensive_data()
+
         return context
