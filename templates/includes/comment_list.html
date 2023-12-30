@@ -1,7 +1,7 @@
 <div class="post-preview" style="margin-left: 6%; font-size: 95%;">
   {% for reply in replies %}
     <p class="post-meta" style="background-color: #f8f9fa">
-      <strong>{{ reply.username|capfirst }}</strong> at {{ reply.published_at }}
+      <strong>{{ reply.author.username|capfirst }}</strong> at {{ reply.published_at }}
       <a href="{% url 'spa-comments:comment-reply' pk=reply.id %}" style="float: right">
         Reply<i class="fa-solid fa-reply"></i>
       </a>
@@ -24,7 +24,16 @@
     <!-- Divider-->
     <hr class="my-4"/>
     {% if reply.replies.all %}
-      {% include "includes/comment_list.html" with replies=reply.replies.all %}
+      <div class="container">
+        <p class="post-meta" style="background-color: #f8f9fa; font-size: 90%">
+          Replies:
+          <button style="float: right; background: none; border: none" onclick="toggleContainer(this)"><i
+              class='fa-solid fa-minus'></i></button>
+        </p>
+        <div class="reply-container" style="display: block">
+          {% include "includes/comment_list.html" with replies=reply.replies.all %}
+        </div>
+      </div>
     {% endif %}
   {% endfor %}
 
