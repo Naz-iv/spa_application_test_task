@@ -1,0 +1,64 @@
+{% extends "index.html" %}
+{% load static %}
+{% block header %}
+  <!-- Page Header-->
+  <header class="masthead" style="background-image: url('{% static "assets/img/contact-bg.jpg" %}')">
+    <div class="container position-relative px-4 px-lg-5">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <div class="page-heading">
+            <h1>Login</h1>
+            <span class="subheading">Please log in to get access to extended functionality<br>
+              or <a href="{% url 'accounts:signup' %}" class="text-bg-primary"><strong>SignUp</strong></a>, if you don't have account yet.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{% endblock %}
+
+{% block main_content %}
+  <!-- Main Content-->
+  <main class="mb-4">
+    <div class="container px-4 px-lg-5">
+      <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+          <div class="my-5">
+            <form method="post" id="form" action="{% url 'accounts:login' %}" novalidate>
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+
+              {% if message %}
+                <div class="text-left text-danger mb-2">{{ message }}</div>
+              {% endif %}
+
+              {% if form_error %}
+                <div class="text-left text-danger mb-2">
+                  {% for key, value in form_error.items %}
+                    {{ key|capfirst }} {{ value }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% for field in form %}
+                <div class="form-floating">
+                  {{ field }}
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  <div class="invalid-feedback"
+                       data-sb-feedback="{{ field.id_for_label }}:required">{{ field.errors }}</div>
+                </div>
+              {% endfor %}
+
+              <br/>
+
+              <!-- Submit Button-->
+              <button class="btn btn-primary text-uppercase" id="submitButton" type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </main>
+{% endblock %}

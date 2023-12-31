@@ -1,0 +1,12 @@
+<form method="get" action="{% url 'spa-comments:home' %}">
+  <label for="order_by">Order by:</label>
+  <select name="order_by" id="order_by">
+    <option value="-published_at" {% if user_choice == "-published_at" %}selected{% endif %}>Newest</option>
+    <option value="published_at" {% if user_choice == "published_at" %}selected{% endif %}>Oldest</option>
+    <option value="username" {% if user_choice == "username" %}selected{% endif %}>Username Ascending</option>
+    <option value="-username" {% if user_choice == "-username" %}selected{% endif %}>Username Descending</option>
+    <option value="email" {% if user_choice == "email" %}selected{% endif %}>Email Ascending</option>
+    <option value="-email" {% if user_choice == "-email" %}selected{% endif %}>Email Descending</option>
+  </select>
+  <button type="submit" style="border: none; background-color: transparent"><i class="fa-solid fa-sort"></i></button>
+</form>
