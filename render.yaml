@@ -1,0 +1,7 @@
+web:
+  - image: python:3.9
+    command:
+      - gunicorn
+      - mysite.wsgi:application
+      - --workers 4
+      - --bind 0.0.0.0:$PORT
