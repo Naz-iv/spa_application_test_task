@@ -2,6 +2,6 @@ web:
   - image: python:3.9
     command:
       - gunicorn
-      - mysite.wsgi:application
+      - spa_application_test_task.wsgi:application
       - --workers 4
       - --bind 0.0.0.0:$PORT
