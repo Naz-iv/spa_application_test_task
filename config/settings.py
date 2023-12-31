@@ -155,7 +155,7 @@ Q_CLUSTER = {
 
 email_config = email_url(os.getenv("EMAIL_URL", "console://"))
 
-EMAIL_BACKEND = email_config["EMAIL_BACKEND"]
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = email_config.get("EMAIL_HOST", "")
 EMAIL_PORT = email_config.get("EMAIL_PORT", "")
 EMAIL_HOST_USER = email_config.get("EMAIL_HOST_USER", "")
