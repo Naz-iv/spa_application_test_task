@@ -4,9 +4,11 @@ from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
+from django_q.tasks import async_task
 
 from spa_comments.forms import CommentCreateForm
 from spa_comments.models import Comment, Author
+from spa_comments.tasks import send_notification_email
 from spa_comments.utils import get_expensive_data
 
 
@@ -42,21 +44,33 @@ class CommentCreateView(generic.CreateView):
     def form_valid(self, form):
         parent_comment_id = form.cleaned_data.pop("parent_comment_id")
         email = form.cleaned_data.pop("email")
+        username = form.cleaned_data.pop("username")
+
         if parent_comment_id:
-            form.instance.parent_comment = Comment.objects.get(id=parent_comment_id)
+            form.instance.parent_comment = get_object_or_404(Comment, id=parent_comment_id)
+
         form.cleaned_data.pop("captcha")
         try:
             author = Author.objects.get(email=email)
-            form.cleaned_data.pop("username")
         except Author.DoesNotExist:
             author = Author.objects.create(
                 email=email,
-                username=form.cleaned_data.pop("username")
+                username=username
             )
 
         form.instance.author = author
 
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        if parent_comment_id:
+            async_task(
+                send_notification_email,
+                form.instance.parent_comment.author.email,
+                username,
+                form.instance.text
+            )
+
+        return response
 
 
 class CommentListView(generic.ListView):
