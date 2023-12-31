@@ -139,9 +139,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 Q_CLUSTER = {
     "name": "spa_app",
-    "workers": 1,
+    "workers": 4,
     "recycle": 500,
-    "timeout": 120,
+    "timeout": 60,
     "compress": True,
     "save_limit": 250,
     "queue_limit": 500,
