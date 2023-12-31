@@ -2,7 +2,7 @@
 
 This app was created for managing spa comments from users.
 
-# .env
+# Create .env before starting
 
 Before running the project either in Docker or locally, you need to create .env file in the project`s root directory.
 You can fill it with this data or create it from .env.sample with your own:
@@ -20,9 +20,13 @@ REDIS_PORT=REDIS_PORT
 EMAIL_URL=EMAIL_URL
 `
 
-# Lauching project locally
+# Project is deployed and can be tested using this link [SPA-APP](https://spa-app-w4bu.onrender.com/)
+Please note, debug mode was not disabled to make review process easier. 
 
-To launch the application, follow next steps:
+
+# Launching project locally
+
+To launch the application locally, follow next steps:
 
 1. Fork the repository
 
@@ -52,8 +56,15 @@ To launch the application, follow next steps:
 
 # Running with docker
 
-After installing Docker run:
+If you have Docker Desktop you can simply pull image from Docker Hub:
+
+1. Pull image using shell or bash:
+`docker pull nivankiv/spa_application_test_task-app`
+
+2. Run image:
+`docker run nivankiv/spa_application_test_task-app`
+
+Alternatively, you cna clone project from git repository and run this commands:
     - docker-compose build
     - docker-compose up
 
-Alternatively pull project from docker hub:
