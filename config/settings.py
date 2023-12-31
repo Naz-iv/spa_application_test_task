@@ -20,7 +20,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", default="your_secret_key")
 DEBUG = os.getenv("DEBUG", default="False")
 
 ALLOWED_HOSTS = [
-    "spa-app-w4bu.onrender.com/",
+    "spa-app-w4bu.onrender.com",
 ]
 
 INTERNAL_IPS = [
