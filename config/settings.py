@@ -21,6 +21,8 @@ DEBUG = os.getenv("DEBUG", default="False")
 
 ALLOWED_HOSTS = [
     "spa-app-w4bu.onrender.com",
+    "127.0.0.1",
+    "localhost"
 ]
 
 INTERNAL_IPS = [
